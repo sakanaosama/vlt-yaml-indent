@@ -1,0 +1,12 @@
+<document>
+    <title>$title</title>
+    <date>$date</date>
+    <items>
+        #foreach($item in $items)
+        <item>
+            <name>$item.name</name>
+            <value>$item.value</value>
+        </item>
+        #end
+    </items>
+</document>

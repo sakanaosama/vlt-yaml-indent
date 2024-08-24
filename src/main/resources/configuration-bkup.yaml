@@ -1,0 +1,58 @@
+crawlers:
+  - id: blah
+    maxDepth: "1"
+    maxDocuments: "10"
+    idleTimeout: "5000"
+    minProgressLoggingInterval: "1000"
+    numThreads: "1"
+    orphansStrategy: IGNORE
+    urlCrawlScopeStrategy:
+      stayOnDomain: true
+      stayOnPort: true
+    fetchersMaxRetries: ""
+    fetchersRetryDelay: ""
+    startReferences:
+      - https://blahblah.com
+    startReferencesSitemaps: []
+    startReferencesFiles: []
+    referenceFilters: []
+    fetchers: []
+    metadataFilters: []
+    documentFilters: []
+    committers:
+      - class: ElasticsearchCommitter
+        connectionTimeout: "100"
+        credentials:
+          username: blahblah
+          password: blahvblah
+          passwordKey:
+            properties:
+              value: ""
+              source: KEY
+              size: ""
+        dotReplacement: ""
+        indexName: afdasdfasdfasd
+        jsonFieldsPattern: ""
+        socketTimeout: ""
+        sourceIdField: ""
+        targetContentField: ""
+        typeName: ""
+        fieldMappings: {}
+        nodes: []
+        restrictions: []
+    delayResolver: {}
+    dataStoreEngine: {}
+    urlNormalizer: {}
+    documentChecksummer:
+      class: MD5DocumentChecksummer
+      keep: true
+      toField: ""
+      onSet: ""
+      fieldMatcher:
+        pattern: ""
+        method: BASIC
+        ignoreCase: false
+        ignoreDiacritic: false
+        matchEmpty: false
+        partial: false
+        trim: false

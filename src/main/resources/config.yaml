@@ -1,0 +1,6 @@
+key1: val1
+key2:
+  key2a: val2a
+  key2b:
+    key2b1: val2b1
+    $key2b2Content
