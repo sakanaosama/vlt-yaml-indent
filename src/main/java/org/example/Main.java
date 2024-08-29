@@ -1,82 +1,41 @@
 package org.example;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.parser.node.ASTDirective;
+import org.example.CustomASTDirective;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.MethodInvocationException;
+import org.apache.velocity.exception.ParseErrorException;
+
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class Main {
 
     public static void main(String[] args){
 
-        // Initialize Velocity Engine
-        Properties properties = new Properties();
-        properties.setProperty("file.resource.loader.path", "src/main/resources/");
 
-//                properties.setProperty("space.gobbling", "structured");
-//        properties.setProperty("space.gobbling", "none");
-//        properties.setProperty("space.gobbling", "lines");
+        // Initialize Velocity engine
+        VelocityEngine velocityEngine = new VelocityEngine();
+        Properties props = new Properties();
+        props.setProperty("file.resource.loader.path", "src/main/resources"); // Template path
+        props.setProperty("userdirective", "org.example.MyCustomIncludeDirective");
 
-        VelocityEngine velocityEngine = new VelocityEngine(properties);
-        velocityEngine.init();
+        velocityEngine.init(props);
 
-        // Preprocess the included file to add indentation
-        StringBuilder indentedContent = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/key2b2.yaml"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                // TODO: 2024-08-23
-                //  How do I know the leg of the indents?????
-                indentedContent.append("----").append(line).append("\n");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(indentedContent);
+        // Get the main template
+        Template template = velocityEngine.getTemplate("main_template.vm");
 
 
-        // Prepare the context and add the indented content
+        // Create the context and add data
         VelocityContext context = new VelocityContext();
-        context.put("key2b2Content", indentedContent.toString());
+        context.put("title", "Sample Document");
+        context.put("date", "2024-08-20");
 
-        // Merge the template with the context
-        StringWriter writer = new StringWriter();
-        velocityEngine.mergeTemplate("config.yaml", "UTF-8", context, writer);
-
-        // Output the processed YAML content
-        System.out.println(writer.toString());
-
-//
-//        // Initialize Velocity engine
-//        VelocityEngine velocityEngine = new VelocityEngine();
-//        Properties props = new Properties();
-//        props.setProperty("file.resource.loader.path", "src/main/resources"); // Template path
-////        props.setProperty("space.gobbling", "structured");
-////        props.setProperty("space.gobbling", "none");
-////        props.setProperty("space.gobbling", "lines");
-//
-//
-//        velocityEngine.init(props);
-//
-//        // Get the main template
-//        Template template = velocityEngine.getTemplate("config.yaml");
-////        Template template = velocityEngine.getTemplate("main_template.vm");
-////        Template template = velocityEngine.getTemplate("configuration.yaml");
-//
-//        // Create the context and add data
-//        VelocityContext context = new VelocityContext();
-//        context.put("title", "Sample Document");
-//        context.put("date", "2024-08-20");
-//
-//        // Create a list of items
+        // Create a list of items
 //        List<Map<String, String>> items = new ArrayList<>();
 //        Map<String, String> item1 = new HashMap<>();
 //        item1.put("name", "Item1");
@@ -90,44 +49,36 @@ public class Main {
 //        items.add(item2);
 //
 //        context.put("items", items);
-//
-//        // Merge template with context data
-//        StringWriter writer = new StringWriter();
-//        template.merge(context, writer);
-//
-//        // Output the XML
-//        System.out.println(writer.toString());
 
+        // Merge template with context data
+        StringWriter writer = new StringWriter();
+        template.merge(context, writer);
 
+        String templateContent = "";
+        try {
+            templateContent = new String(Files.readAllBytes(Paths.get("C:\\workspace\\nx-workspace\\example\\vlt-yaml-indent\\vlt-yaml-indent\\src\\main\\resources\\main_template.vm")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        // Writer to hold the output of evaluating the file content as a string
+        StringWriter fileContentOutputWriter = new StringWriter();
 
+        // Evaluate the content of the .vm file using VelocityEngine.evaluate()
+        try {
+            velocityEngine.evaluate(context, fileContentOutputWriter, "logTag", templateContent);
+            System.out.println(fileContentOutputWriter.toString());
 
+        } catch (ParseErrorException e) {
+            System.err.println("Template parsing error: " + e.getMessage());
+        } catch (MethodInvocationException e) {
+            System.err.println("Method invocation error: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("General error: " + e.getMessage());
+        }
 
-
-//
-//
-//
-//        // Create the context and add data
-//        VelocityContext context = new VelocityContext();
-//
-//        // Merge template with context data
-//        StringWriter writer = new StringWriter();
-//        template.merge(context, writer);
-//
-//        // Output the YAML
-//        System.out.println(writer.toString());
-//
-//        // Add data to the context
-//        context.put("key1", "value1");
-//        context.put("key2", "value2");
-//
-//        // Merge the template with the updated context and output the result to a new StringWriter
-//        StringWriter updatedWriter = new StringWriter();
-//        template.merge(context, updatedWriter);
-//
-//        // Print the template to the screen again (with added context)
-//        System.out.println("\nTemplate with updated context:");
-//        System.out.println(updatedWriter.toString());
 
     }
+
+
 }

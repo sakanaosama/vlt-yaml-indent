@@ -1,6 +1,11 @@
+#myDirective("World")
 key1: val1
 key2:
   key2a: val2a
   key2b:
-    key2b1: val2b1
+    key2b1: $title
+    date: $date
+    $items
     $key2b2Content
+#include("key2b2.yaml")
+#parse("key2b2.yaml")

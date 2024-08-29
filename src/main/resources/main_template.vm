@@ -1,5 +1,7 @@
-title: Sample Document
-date: 2024-08-20
+  #include("item_template.vm")
+title: $title
+date: $date
 items:
-  #parse("item_template.vm")
+  #include("item_template.vm")
   #parse("item_template2.vm")
+  #myDirective("blah")
