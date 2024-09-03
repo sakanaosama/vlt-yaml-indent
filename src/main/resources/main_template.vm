@@ -1,7 +1,10 @@
-  #include("item_template.vm")
+
 title: $title
 date: $date
 items:
   #include("item_template.vm")
-  #parse("item_template2.vm")
-  #myDirective("blah")
+items2:
+  items3:
+    #include("item_template.vm")
+
+#parse("item_template2.vm")
