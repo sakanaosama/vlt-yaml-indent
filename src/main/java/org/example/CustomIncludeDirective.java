@@ -3,10 +3,7 @@ package org.example;
 import org.apache.velocity.app.event.EventHandlerUtil;
 import org.apache.velocity.context.InternalContextAdapter;
 import org.apache.velocity.exception.ResourceNotFoundException;
-import org.apache.velocity.exception.TemplateInitException;
 import org.apache.velocity.exception.VelocityException;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.directive.Include;
 import org.apache.velocity.runtime.parser.node.*;
 import org.apache.velocity.exception.MethodInvocationException;
@@ -15,12 +12,10 @@ import org.apache.velocity.util.StringUtils;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Method;
 
-public class MyCustomIncludeDirective extends Include
+public class CustomIncludeDirective extends Include
 {
-        private String outputMsgStart = "";
-        private String outputMsgEnd = "";
-
         @Override
         public boolean render(InternalContextAdapter context,
                               Writer writer, Node node)
@@ -31,33 +26,56 @@ public class MyCustomIncludeDirective extends Include
              *  get our arguments and check them
              */
 
-            int argCount = node.jjtGetNumChildren();
+            try {
+                // Obtain the protected method 'outputErrorToStream' from the superclass 'Include'
+                Method outputErrorToStreamMethod = Include.class.getDeclaredMethod(
+                        "outputErrorToStream",
+                        Writer.class,
+                        String.class
+                );
+                outputErrorToStreamMethod.setAccessible(true); // Make the protected method accessible
 
-            for( int i = 0; i < argCount; i++)
-            {
-                /*
-                 *  we only handle StringLiterals and References right now
-                 */
+                int argCount = node.jjtGetNumChildren();
 
-                Node n = node.jjtGetChild(i);
-
-                if ( n.getType() ==  ParserTreeConstants.JJTSTRINGLITERAL ||
-                        n.getType() ==  ParserTreeConstants.JJTREFERENCE )
+                for( int i = 0; i < argCount; i++)
                 {
-                    if (!renderOutput( n, context, writer ))
-                        outputErrorToStream( writer, "error with arg " + i
-                                + " please see log.");
+                    /*
+                     *  we only handle StringLiterals and References right now
+                     */
+
+                    Node n = node.jjtGetChild(i);
+
+
+//                    String firstImageValue = (String) field.get(n);
+//
+//                    // Print the value of 'firstImage'
+//                    System.out.println("firstImage: " + firstImageValue);
+
+                    if ( n.getType() ==  ParserTreeConstants.JJTSTRINGLITERAL ||
+                            n.getType() ==  ParserTreeConstants.JJTREFERENCE )
+                    {
+                        if (!renderOutput( n, context, writer ))
+                            outputErrorToStreamMethod.invoke(this, writer, "error with arg " + i + " please see log.");
+//                            outputErrorToStream( writer, "error with arg " + i
+//                                    + " please see log.");
+                    }
+                    else
+                    {
+                        String msg = "invalid #include() argument '"
+                                + n.toString() + "' at " + StringUtils.formatFileString(this);
+                        log.error(msg);
+                        outputErrorToStreamMethod.invoke(this, writer, "error with arg " + i + " please see log.");
+//                        outputErrorToStream( writer, "error with arg " + i
+//                                + " please see log.");
+                        throw new VelocityException(msg, null, rsvc.getLogContext().getStackTrace());
+                    }
                 }
-                else
-                {
-                    String msg = "invalid #include() argument '"
-                            + n.toString() + "' at " + StringUtils.formatFileString(this);
-                    log.error(msg);
-                    outputErrorToStream( writer, "error with arg " + i
-                            + " please see log.");
-                    throw new VelocityException(msg, null, rsvc.getLogContext().getStackTrace());
-                }
+            } catch (Exception e) {
+                // Handle reflection exceptions: NoSuchMethodException, IllegalAccessException, InvocationTargetException
+                e.printStackTrace();
             }
+
+
 
             return true;
         }
@@ -148,32 +166,38 @@ public class MyCustomIncludeDirective extends Include
             else if ( resource == null )
                 return false;
 
-            String indentedData = ((String)resource.getData()).replaceAll("(?m)^", node.jjtGetParent().getFirstTokenImage());
+
+
+
+
+            String prefixSpace=((ASTDirective)node.jjtGetParent()).getPrefix();
+
+            String indentedData = ((String)resource.getData()).replaceAll("(?m)^", prefixSpace);
 
             writer.write(indentedData);
 
             return true;
         }
 
-        /**
-         *  Puts a message to the render output stream if ERRORMSG_START / END
-         *  are valid property strings.  Mainly used for end-user template
-         *  debugging.
-         *  @param writer
-         *  @param msg
-         *  @throws IOException
-         *  @deprecated if/how errors are displayed is not the concern of the engine, which should throw in all cases
-         */
-        private void outputErrorToStream( Writer writer, String msg )
-                throws IOException
-        {
-            if ( outputMsgStart != null  && outputMsgEnd != null)
-            {
-                writer.write(outputMsgStart);
-                writer.write(msg);
-                writer.write(outputMsgEnd);
-            }
-        }
+//        /**
+//         *  Puts a message to the render output stream if ERRORMSG_START / END
+//         *  are valid property strings.  Mainly used for end-user template
+//         *  debugging.
+//         *  @param writer
+//         *  @param msg
+//         *  @throws IOException
+//         *  @deprecated if/how errors are displayed is not the concern of the engine, which should throw in all cases
+//         */
+//        private void outputErrorToStream( Writer writer, String msg )
+//                throws IOException
+//        {
+//            if ( outputMsgStart != null  && outputMsgEnd != null)
+//            {
+//                writer.write(outputMsgStart);
+//                writer.write(msg);
+//                writer.write(outputMsgEnd);
+//            }
+//        }
 }
 
 

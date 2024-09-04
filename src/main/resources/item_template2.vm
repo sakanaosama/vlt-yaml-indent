@@ -1,2 +1,3 @@
 - name: Item2
-  value: Value2
+value: Value2
+#include("item_template.vm")

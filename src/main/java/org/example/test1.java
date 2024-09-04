@@ -33,7 +33,7 @@ public class test1 {
             String line;
             while ((line = br.readLine()) != null) {
                 // TODO: 2024-08-23
-                //  How do I know the leg of the indents?????
+                //  How do I know the len of the indents?????
                 indentedContent.append("----").append(line).append("\n");
             }
         } catch (Exception e) {
@@ -68,7 +68,7 @@ public class test1 {
 //
 //        // Get the main template
 //        Template template = velocityEngine.getTemplate("config.yaml");
-////        Template template = velocityEngine.getTemplate("main_template.vm");
+////        Template template = velocityEngine.getTemplate("include_main_template.vm");
 ////        Template template = velocityEngine.getTemplate("configuration.yaml");
 //
 //        // Create the context and add data

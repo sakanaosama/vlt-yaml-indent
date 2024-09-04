@@ -1,0 +1,5 @@
+tst_depth_3_1:
+  - name: v3Include directive
+  value: v3Testing Indentation Depth
+tst_depth_3_2:
+  #parse("include_main_item_template2.vm")
