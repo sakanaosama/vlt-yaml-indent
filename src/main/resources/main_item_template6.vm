@@ -1,0 +1,12 @@
+#set($names = ["Alice", "Bob", "Charlie"])
+#set($age = [10, 30, 50])
+#set($size = $names.size() - 1)  ## Calculate the size first
+#foreach($name in $names)
+Name: $name
+Age: $age
+#if($age >= 18)
+age: you are nother.
+#else
+Feels: very old.
+#end
+#end

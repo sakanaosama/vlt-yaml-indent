@@ -22,10 +22,6 @@ public class CustomIncludeDirective extends Include
                 throws IOException, MethodInvocationException,
                 ResourceNotFoundException
         {
-            /*
-             *  get our arguments and check them
-             */
-
             try {
                 // Obtain the protected method 'outputErrorToStream' from the superclass 'Include'
                 Method outputErrorToStreamMethod = Include.class.getDeclaredMethod(
@@ -39,25 +35,13 @@ public class CustomIncludeDirective extends Include
 
                 for( int i = 0; i < argCount; i++)
                 {
-                    /*
-                     *  we only handle StringLiterals and References right now
-                     */
-
                     Node n = node.jjtGetChild(i);
-
-
-//                    String firstImageValue = (String) field.get(n);
-//
-//                    // Print the value of 'firstImage'
-//                    System.out.println("firstImage: " + firstImageValue);
 
                     if ( n.getType() ==  ParserTreeConstants.JJTSTRINGLITERAL ||
                             n.getType() ==  ParserTreeConstants.JJTREFERENCE )
                     {
                         if (!renderOutput( n, context, writer ))
                             outputErrorToStreamMethod.invoke(this, writer, "error with arg " + i + " please see log.");
-//                            outputErrorToStream( writer, "error with arg " + i
-//                                    + " please see log.");
                     }
                     else
                     {
@@ -65,18 +49,12 @@ public class CustomIncludeDirective extends Include
                                 + n.toString() + "' at " + StringUtils.formatFileString(this);
                         log.error(msg);
                         outputErrorToStreamMethod.invoke(this, writer, "error with arg " + i + " please see log.");
-//                        outputErrorToStream( writer, "error with arg " + i
-//                                + " please see log.");
                         throw new VelocityException(msg, null, rsvc.getLogContext().getStackTrace());
                     }
                 }
             } catch (Exception e) {
-                // Handle reflection exceptions: NoSuchMethodException, IllegalAccessException, InvocationTargetException
                 e.printStackTrace();
             }
-
-
-
             return true;
         }
 
@@ -91,9 +69,6 @@ public class CustomIncludeDirective extends Include
                 return false;
             }
 
-            /*
-             *  does it have a value?  If you have a null reference, then no.
-             */
             Object value = node.value( context );
             if ( value == null)
             {
@@ -101,21 +76,10 @@ public class CustomIncludeDirective extends Include
                 return false;
             }
 
-            /*
-             *  get the path
-             */
             String sourcearg = value.toString();
-
-            /*
-             *  check to see if the argument will be changed by the event handler
-             */
 
             String arg = EventHandlerUtil.includeEvent( rsvc, context, sourcearg, context.getCurrentTemplateName(), getName() );
 
-            /*
-             *   a null return value from the event cartridge indicates we should not
-             *   input a resource.
-             */
             boolean blockinput = false;
             if (arg == null)
                 blockinput = true;
@@ -129,17 +93,11 @@ public class CustomIncludeDirective extends Include
             }
             catch ( ResourceNotFoundException rnfe )
             {
-                /*
-                 * the arg wasn't found.  Note it and throw
-                 */
                 log.error("#include(): cannot find resource '{}', called at {}",
                         arg, StringUtils.formatFileString(this));
                 throw rnfe;
             }
 
-            /*
-             * pass through application level runtime exceptions
-             */
             catch( RuntimeException e )
             {
                 log.error("#include(): arg = '{}', called at {}",
@@ -154,50 +112,18 @@ public class CustomIncludeDirective extends Include
                 throw new VelocityException(msg, e, rsvc.getLogContext().getStackTrace());
             }
 
-
-            /*
-             *    note - a blocked input is still a successful operation as this is
-             *    expected behavior.
-             */
-
             if ( blockinput )
                 return true;
 
             else if ( resource == null )
                 return false;
 
-
-
-
-
             String prefixSpace=((ASTDirective)node.jjtGetParent()).getPrefix();
-
             String indentedData = ((String)resource.getData()).replaceAll("(?m)^", prefixSpace);
-
             writer.write(indentedData);
 
             return true;
         }
-
-//        /**
-//         *  Puts a message to the render output stream if ERRORMSG_START / END
-//         *  are valid property strings.  Mainly used for end-user template
-//         *  debugging.
-//         *  @param writer
-//         *  @param msg
-//         *  @throws IOException
-//         *  @deprecated if/how errors are displayed is not the concern of the engine, which should throw in all cases
-//         */
-//        private void outputErrorToStream( Writer writer, String msg )
-//                throws IOException
-//        {
-//            if ( outputMsgStart != null  && outputMsgEnd != null)
-//            {
-//                writer.write(outputMsgStart);
-//                writer.write(msg);
-//                writer.write(outputMsgEnd);
-//            }
-//        }
 }
 
 

@@ -23,7 +23,7 @@ public class Main {
         props.setProperty("userdirective", "org.example.CustomIncludeDirective, org.example.CustomParseDirective");
 
 
-        props.setProperty("space.gobbling", "structured");
+//        props.setProperty("space.gobbling", "structured");
 //        props.setProperty("space.gobbling", "none");
 //        props.setProperty("space.gobbling", "lines"); //default
 
@@ -31,12 +31,12 @@ public class Main {
         velocityEngine.init(props);
 
         // Get the main template
-        Template template = velocityEngine.getTemplate("include_main_template.vm");
+        Template template = velocityEngine.getTemplate("main_template.vm");
 
 
         // Create the context and add data
         VelocityContext context = new VelocityContext();
-        context.put("title", "VLT content Sample Document");
+        context.put("title", "template title");
         context.put("date", "2024-08-20");
 
         // Create a list of items
@@ -60,7 +60,7 @@ public class Main {
 
         String templateContent = "";
         try {
-            templateContent = new String(Files.readAllBytes(Paths.get("C:\\workspace\\nx-workspace\\example\\vlt-yaml-indent\\vlt-yaml-indent\\src\\main\\resources\\include_main_template.vm")));
+            templateContent = new String(Files.readAllBytes(Paths.get("C:\\workspace\\nx-workspace\\example\\vlt-yaml-indent\\vlt-yaml-indent\\src\\main\\resources\\main_template.vm")));
         } catch (Exception e) {
             e.printStackTrace();
         }

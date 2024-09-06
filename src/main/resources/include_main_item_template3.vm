@@ -1,8 +1,0 @@
-tst_depth_3_1:
-  #include("include_main_item_template5.vm")
-  - 1111: 11111111
-  1111: 1111111111
-  #parse("include_main_item_template4.vm")
-tst_depth3_2
-  - 3333: 33333333
-  3333: 3333333333
